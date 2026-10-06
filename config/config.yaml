@@ -1,0 +1,30 @@
+# Runtime parameters — loaded by AgentRegistry, passed as Graph(config=...).
+# Separate from config/agent.yaml (the static manifest).
+# In the standalone deployment the same file is read by _runtime_config()
+# (src/graph/graph.py). max_retry is consumed by the framework backbone (retry
+# routing); the voice_inspection block is validated at compile time — an
+# invalid value stops graph construction — and injected into the inner domain
+# nodes through their constructors.
+
+max_retry: 3
+timeout_s: 30
+
+voice_inspection:
+  # FunASR service URL. Leave empty: this template ships no FunASR client, so a
+  # configured endpoint makes transcription FAIL CLOSED with a clear error
+  # instead of fabricating a transcript. Supply the recognised text as
+  # input_context.transcript; with none supplied the offline baseline runs.
+  funasr_endpoint: ""
+  # Identifiers rendered into the QMS record (letters, digits, _ -; 1-32 chars).
+  # A caller may override both per request through input_context.
+  product_line: "UNKNOWN"
+  plant_id: "MFG-PLANT-01"
+  # Specification ranges per JIS B 9700 metric, merged over the built-in
+  # defaults (src/nodes/spec_range_validate_and_qms_record_format_node.py).
+  # Bounds must be finite with min <= max; units: mm, μm, °, kN, HRC, HV.
+  spec_ranges:
+    外径寸法: {min: 9.95, max: 10.05, unit: "mm"}
+    内径寸法: {min: 9.90, max: 10.00, unit: "mm"}
+    算術平均粗さRa: {min: 0.0, max: 1.6, unit: "μm"}
+    最大高さRz: {min: 0.0, max: 6.3, unit: "μm"}
+    厚さ: {min: 1.90, max: 2.10, unit: "mm"}
